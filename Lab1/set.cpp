@@ -559,10 +559,10 @@ void Set<T>::init()
 template<typename T>
 void Set<T>::print(ostream& os) const
 {
-    os << "{ ";
-    for(Node *p = head->next; p!=tail; p = p->next)
-        os << p->value << " ";
-    os << "}";
+  os << "{ ";
+  for(Node *p = head->next; p!=tail; p = p->next)
+    os << p->value << " ";
+  os << "}";
 }
 
 
@@ -571,8 +571,11 @@ void Set<T>::print(ostream& os) const
 template<typename T>
 Set<T> Set<T>::_union(const Set& b) const
 {
-    //ADD CODE
-    return *this;
+  // create a new set with copy constructor
+  // then add the elements in s2 into s1.
+  if ()
+
+  return *this;
 }
 
 
