@@ -49,40 +49,40 @@ int main()
 
     cout << "S5 = " << S5 << endl;
 
-    // /*****************************************************
-    // * TEST PHASE 3                                       *
-    // * Assignment operator: operator=                     *
-    // ******************************************************/
-    // cout << "\nTEST PHASE 3: operator=\n\n";
+    /*****************************************************
+    * TEST PHASE 3                                       *
+    * Assignment operator: operator=                     *
+    ******************************************************/
+    cout << "\nTEST PHASE 3: operator=\n\n";
 
-    // S3 = S4 = S5;
+    S3 = S4 = S5;
 
-    // cout << "S3 = " << S3 << endl;
-    // cout << "S4 = " << S4 << endl;
+    cout << "S3 = " << S3 << endl;
+    cout << "S4 = " << S4 << endl;
 
 
-    // /*****************************************************
-    // * TEST PHASE 4                                       *
-    // * is_member                                          *
-    // ******************************************************/
-    // cout << "\nTEST PHASE 4: is_member\n\n";
+    /*****************************************************
+    * TEST PHASE 4                                       *
+    * is_member                                          *
+    ******************************************************/
+    cout << "\nTEST PHASE 4: is_member\n\n";
 
-    // for (int i = 1; i <= 5; i++)
-    // {
-    //     cout << "S3.is_member(" << i << ") ? "
-    //          << (S3.is_member(i) ? 'T' : 'F') << endl;
-    // }
-    //   cout << "\nS3.is_member(99999) ? "
-    //        << (S3.is_member(99999) ? 'T' : 'F') << endl;
+    for (int i = 1; i <= 5; i++)
+    {
+        cout << "S3.is_member(" << i << ") ? "
+             << (S3.is_member(i) ? 'T' : 'F') << endl;
+    }
+      cout << "\nS3.is_member(99999) ? "
+           << (S3.is_member(99999) ? 'T' : 'F') << endl;
 
-    // /*****************************************************
-    // * TEST PHASE 5                                       *
-    // * cardinality                                        *
-    // ******************************************************/
-    // cout << "\nTEST PHASE 5: cardinality\n\n";
+    /*****************************************************
+    * TEST PHASE 5                                       *
+    * cardinality                                        *
+    ******************************************************/
+    cout << "\nTEST PHASE 5: cardinality\n\n";
 
-    // cout << "S3.cardinality() = "
-    //      << S3.cardinality() << endl;
+    cout << "S3.cardinality() = "
+         << S3.cardinality() << endl;
 
     // /*****************************************************
     // * TEST PHASE 5                                       *

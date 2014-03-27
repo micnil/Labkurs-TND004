@@ -386,7 +386,6 @@ Set<T>::Set (T n)
 template<typename T>
 Set<T>::Set (T a[], int n)
 {
-    //ADD CODE
     init();
     for(int i=0; i < n; ++i)
         insert( tail, a[i] );
@@ -397,12 +396,12 @@ Set<T>::Set (T a[], int n)
 template<typename T>
 Set<T>::Set (const Set& b)
 {
-    //ADD CODE
-    // copy everything from one set to the other.. 
-    init();
-    for(Node *p=b.head->next; p!=b.tail; p=p->next)
-        insert(tail,p->value);
+  // create a new
+  init();
+  for(Node *p=b.head->next; p!=b.tail; p=p->next)
+      insert(tail,p->value);
 
+  counter = b.counter;
 
 }
 
@@ -411,7 +410,16 @@ Set<T>::Set (const Set& b)
 template<typename T>
 Set<T>::~Set ()
 {
-    //ADD CODE
+  // gå igenom varje nod och ta bort kanske? 
+  // sätta alla pekare till NULL, sätta counter till 0
+
+  clear(); 
+
+  delete head; //head = nullptr;
+  delete tail; //tail = nullptr;
+
+  counter = 0;
+
 }
 
 
@@ -419,8 +427,16 @@ Set<T>::~Set ()
 template<typename T>
 Set<T>& Set<T>::operator=(const Set& b)
 {
-    //ADD CODE
-    return *this;
+  if(this != &b) {
+
+    this->~Set();
+    
+    init();
+    for(Node *p=b.head->next; p!=b.tail; p=p->next)
+      insert(tail,p->value);
+  }
+
+  return *this;
 }
 
 
@@ -428,7 +444,7 @@ Set<T>& Set<T>::operator=(const Set& b)
 template<typename T>
 bool Set<T>::is_empty () const
 {
-    return (head->next == tail);
+  return (head->next == tail);
 }
 
 
@@ -436,8 +452,13 @@ bool Set<T>::is_empty () const
 template<typename T>
 bool Set<T>::is_member (T val) const
 {
-   //ADD CODE
-   return false;
+  // eftersom listan är sorterad, kanske kolla något om val
+  // är större än den sista direkt typ? eftersom vi har en pekare dit..
+  for(Node *p = head->next; p!=tail ; p = p->next)
+    if(p->value == val)
+      return true; 
+
+  return false;
 }
 
 
@@ -445,8 +466,11 @@ bool Set<T>::is_member (T val) const
 template<typename T>
 int Set<T>::cardinality() const
 {
-    //ADD CODE
-    return 0;
+    int howMany=0;
+    
+    for(Node *p=head->next; p != tail ; p=p->next, ++howMany);
+    
+    return howMany;
 }
 
 
@@ -498,6 +522,8 @@ Set<T>& Set<T>::insert(Node *p, T val)
     //ADD CODE
     p->prev = p->prev->next = new Node(val,p,p->prev);
 
+    ++counter;
+
     return *this;
 }
 
@@ -506,12 +532,11 @@ Set<T>& Set<T>::insert(Node *p, T val)
 template<typename T>
 Set<T>& Set<T>::erase(Node *p)
 {
-    //ADD CODE
-    /*p->prev->next = p->next;
+    p->prev->next = p->next;
     p->next->prev = p->prev;
 
     delete p;
-*/
+
     return *this;
 }
 
@@ -524,6 +549,8 @@ void Set<T>::init()
     tail = new Node(T(),nullptr, head); // null?
 
     head->next = tail; 
+
+    counter = 0;
 
 }
 
