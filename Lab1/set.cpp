@@ -370,7 +370,15 @@ Set<T>::Set ()
 template<typename T>
 Set<T>::Set (T n)
 {
-   //ADD CODE
+  /*  head = new Node();
+    Node* middle = new Node(n,nullptr,head); 
+    tail = new Node(T(),nullptr,middle);
+
+    head->next=middle;
+    middle->next = tail;*/
+
+    init();
+    insert(tail,n);
 }
 
 
@@ -379,6 +387,9 @@ template<typename T>
 Set<T>::Set (T a[], int n)
 {
     //ADD CODE
+    init();
+    for(int i=0; i < n; ++i)
+        insert( tail, a[i] );
 }
 
 
@@ -387,6 +398,12 @@ template<typename T>
 Set<T>::Set (const Set& b)
 {
     //ADD CODE
+    // copy everything from one set to the other.. 
+    init();
+    for(Node *p=b.head->next; p!=b.tail; p=p->next)
+        insert(tail,p->value);
+
+
 }
 
 
@@ -411,8 +428,7 @@ Set<T>& Set<T>::operator=(const Set& b)
 template<typename T>
 bool Set<T>::is_empty () const
 {
-   //ADD CODE
-   return false;
+    return (head->next == tail);
 }
 
 
@@ -480,6 +496,8 @@ template<typename T>
 Set<T>& Set<T>::insert(Node *p, T val)
 {
     //ADD CODE
+    p->prev = p->prev->next = new Node(val,p,p->prev);
+
     return *this;
 }
 
@@ -489,6 +507,11 @@ template<typename T>
 Set<T>& Set<T>::erase(Node *p)
 {
     //ADD CODE
+    /*p->prev->next = p->next;
+    p->next->prev = p->prev;
+
+    delete p;
+*/
     return *this;
 }
 
@@ -497,6 +520,11 @@ template<typename T>
 void Set<T>::init()
 {
     //ADD CODE
+    head = new Node();
+    tail = new Node(T(),nullptr, head); // null?
+
+    head->next = tail; 
+
 }
 
 
@@ -504,7 +532,10 @@ void Set<T>::init()
 template<typename T>
 void Set<T>::print(ostream& os) const
 {
-    //ADD CODE
+    os << "{ ";
+    for(Node *p = head->next; p!=tail; p = p->next)
+        os << p->value << " ";
+    os << "}";
 }
 
 
