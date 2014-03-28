@@ -1,3 +1,10 @@
+/*
+Michael Nilsson
+Linnéa Mellblom
+TND004 Datastructures
+28/3-14
+*/
+
 #include <iostream>
 #include <new>
 #include <cassert>
@@ -370,13 +377,6 @@ Set<T>::Set ()
 template<typename T>
 Set<T>::Set (T n)
 {
-  /*  head = new Node();
-    Node* middle = new Node(n,nullptr,head); 
-    tail = new Node(T(),nullptr,middle);
-
-    head->next=middle;
-    middle->next = tail;*/
-
     init();
     insert(tail,n);
 }
@@ -410,10 +410,7 @@ Set<T>::Set (const Set& b)
 template<typename T>
 Set<T>::~Set ()
 {
-  // gå igenom varje nod och ta bort kanske? 
-  // sätta alla pekare till NULL, sätta counter till 0
-
-  clear(); 
+  clear();
 
   delete head; //head = nullptr;
   delete tail; //tail = nullptr;
@@ -427,10 +424,9 @@ Set<T>::~Set ()
 template<typename T>
 Set<T>& Set<T>::operator=(const Set& b)
 {
-  if(this != &b) {
-
+  if(this != &b) { // test if self-assignment
     this->~Set();
-    
+
     init();
     for(Node *p=b.head->next; p!=b.tail; p=p->next)
       insert(tail,p->value);
@@ -452,13 +448,15 @@ bool Set<T>::is_empty () const
 template<typename T>
 bool Set<T>::is_member (T val) const
 {
-  // eftersom listan är sorterad, kanske kolla något om val
-  // är större än den sista direkt typ? eftersom vi har en pekare dit..
-  for(Node *p = head->next; p!=tail ; p = p->next)
-    if(p->value == val)
-      return true; 
+  Node *p ;
+  for(p =head->next; p!=tail && (p->value != val) ; p = p->next )
+    ;
 
-  return false;
+  if (p==tail)
+    return false; // if p have reached the end it will return false
+
+  return true;
+
 }
 
 
@@ -467,10 +465,12 @@ template<typename T>
 int Set<T>::cardinality() const
 {
     int howMany=0;
-    
-    for(Node *p=head->next; p != tail ; p=p->next, ++howMany);
-    
+
+    for(Node *p=head->next; p != tail ; p=p->next, ++howMany)
+        ;
+
     return howMany;
+    //return counter ?
 }
 
 
@@ -478,7 +478,19 @@ int Set<T>::cardinality() const
 template<typename T>
 void Set<T>::clear()
 {
-    //ADD CODE
+    if (!is_empty()){
+     Node *p=head->next;
+
+    while(p!=tail){
+        p = p->next;
+        delete p->prev;
+    }
+
+    head->next = tail;
+    tail->prev = head;
+
+    counter = 0;
+    }
 }
 
 //Return true, if the set is a subset of b, otherwise false
@@ -486,8 +498,15 @@ void Set<T>::clear()
 template<typename T>
 bool Set<T>::operator<=(const Set& b) const
 {
-    //ADD CODE
-    return false;
+    if(b.is_empty())
+        return false;
+
+    for(Node *p = head->next; p!=tail; p=p->next ) {
+        if( !b.is_member(p->value) ) // if not a member then return false!
+            return false;
+    }
+
+    return true;
 }
 
 
@@ -496,8 +515,7 @@ bool Set<T>::operator<=(const Set& b) const
 template<typename T>
 bool Set<T>::operator==(const Set& b) const
 {
-    //ADD CODE
-    return false;
+    return (*this <= b && b<=*this); // kollar om exakt lika
 }
 
 
@@ -506,8 +524,7 @@ bool Set<T>::operator==(const Set& b) const
 template<typename T>
 bool Set<T>::operator<(const Set& b) const
 {
-    //ADD CODE
-    return false;
+    return (*this <= b && !(b<=*this));
 }
 
 
@@ -519,7 +536,6 @@ bool Set<T>::operator<(const Set& b) const
 template<typename T>
 Set<T>& Set<T>::insert(Node *p, T val)
 {
-    //ADD CODE
     p->prev = p->prev->next = new Node(val,p,p->prev);
 
     ++counter;
@@ -537,6 +553,8 @@ Set<T>& Set<T>::erase(Node *p)
 
     delete p;
 
+    --counter;
+
     return *this;
 }
 
@@ -544,11 +562,10 @@ Set<T>& Set<T>::erase(Node *p)
 template<typename T>
 void Set<T>::init()
 {
-    //ADD CODE
     head = new Node();
     tail = new Node(T(),nullptr, head); // null?
 
-    head->next = tail; 
+    head->next = tail;
 
     counter = 0;
 
@@ -559,10 +576,10 @@ void Set<T>::init()
 template<typename T>
 void Set<T>::print(ostream& os) const
 {
-  os << "{ ";
-  for(Node *p = head->next; p!=tail; p = p->next)
-    os << p->value << " ";
-  os << "}";
+    os << "{ ";
+    for(Node *p = head->next; p!=tail; p = p->next)
+        os << p->value << " ";
+    os << "}";
 }
 
 
@@ -571,11 +588,40 @@ void Set<T>::print(ostream& os) const
 template<typename T>
 Set<T> Set<T>::_union(const Set& b) const
 {
-  // create a new set with copy constructor
-  // then add the elements in s2 into s1.
-  if ()
+    Set<T> newUnionSet;
 
-  return *this;
+    Node *set1 = head->next;
+    Node *set2 = b.head->next;
+
+    // do until one set has reached the end
+    while (set1 != tail && set2!=b.tail){
+        if(set1->value > set2->value) {
+            newUnionSet.insert(newUnionSet.tail, set2->value);
+            set2 = set2->next;
+        }
+        else if (set2->value > set1->value){
+            newUnionSet.insert(newUnionSet.tail, set1->value);
+            set1 = set1->next;
+        }
+        else{ // lika, kopiera ett värde
+            newUnionSet.insert(newUnionSet.tail, set1->value);
+            set2=set2->next;
+            set1=set1->next;
+        }
+
+    }
+
+    // if it reamining stuff from one set
+    while(set1 != tail){
+        newUnionSet.insert(newUnionSet.tail, set1->value);
+        set1 = set1->next;
+    }
+    while(set2 != b.tail){
+        newUnionSet.insert(newUnionSet.tail, set2->value);
+        set2 = set2->next;
+    }
+
+    return newUnionSet;
 }
 
 
@@ -584,8 +630,14 @@ Set<T> Set<T>::_union(const Set& b) const
 template<typename T>
 Set<T> Set<T>::_intersection(const Set& b) const
 {
-    //ADD CODE
-    return *this;
+    Set<T> newIntersectionSet;
+
+    for(Node *p = b.head->next; p!=b.tail; p=p->next){
+        if( is_member(p->value) )
+            newIntersectionSet.insert(newIntersectionSet.tail, p->value);
+    }
+
+    return newIntersectionSet;
 }
 
 
@@ -594,8 +646,14 @@ Set<T> Set<T>::_intersection(const Set& b) const
 template<typename T>
 Set<T> Set<T>::_difference(const Set& b) const
 {
-    //ADD CODE
-    return *this;
+    Set<T> newDifferenceSet;
+
+    for(Node *p = head->next; p!=tail; p=p->next){
+        if( !b.is_member(p->value) ) // only add if the value of this do not exist in set 2
+            newDifferenceSet.insert(newDifferenceSet.tail, p->value);
+    }
+
+    return newDifferenceSet;
 }
 
 
