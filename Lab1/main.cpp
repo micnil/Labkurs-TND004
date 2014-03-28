@@ -156,6 +156,5 @@ int main()
     cout << "The words sorted alphabetically: "
          << words << endl;
 
-
     return 0;
 }

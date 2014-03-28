@@ -1,3 +1,10 @@
+/*
+Michael Nilsson
+Linnéa Mellblom
+TND004 Datastructures
+28/3-14
+*/
+
 #include <iostream>
 #include <new>
 #include <cassert>
@@ -370,7 +377,8 @@ Set<T>::Set ()
 template<typename T>
 Set<T>::Set (T n)
 {
-   //ADD CODE
+    init();
+    insert(tail,n);
 }
 
 
@@ -378,7 +386,9 @@ Set<T>::Set (T n)
 template<typename T>
 Set<T>::Set (T a[], int n)
 {
-    //ADD CODE
+    init();
+    for(int i=0; i < n; ++i)
+        insert( tail, a[i] );
 }
 
 
@@ -386,7 +396,13 @@ Set<T>::Set (T a[], int n)
 template<typename T>
 Set<T>::Set (const Set& b)
 {
-    //ADD CODE
+  // create a new
+  init();
+  for(Node *p=b.head->next; p!=b.tail; p=p->next)
+      insert(tail,p->value);
+
+  counter = b.counter;
+
 }
 
 
@@ -394,7 +410,13 @@ Set<T>::Set (const Set& b)
 template<typename T>
 Set<T>::~Set ()
 {
-    //ADD CODE
+  clear();
+
+  delete head; //head = nullptr;
+  delete tail; //tail = nullptr;
+
+  counter = 0;
+
 }
 
 
@@ -402,8 +424,15 @@ Set<T>::~Set ()
 template<typename T>
 Set<T>& Set<T>::operator=(const Set& b)
 {
-    //ADD CODE
-    return *this;
+  if(this != &b) { // test if self-assignment
+    this->~Set();
+
+    init();
+    for(Node *p=b.head->next; p!=b.tail; p=p->next)
+      insert(tail,p->value);
+  }
+
+  return *this;
 }
 
 
@@ -411,8 +440,7 @@ Set<T>& Set<T>::operator=(const Set& b)
 template<typename T>
 bool Set<T>::is_empty () const
 {
-   //ADD CODE
-   return false;
+  return (head->next == tail);
 }
 
 
@@ -420,8 +448,15 @@ bool Set<T>::is_empty () const
 template<typename T>
 bool Set<T>::is_member (T val) const
 {
-   //ADD CODE
-   return false;
+  Node *p ;
+  for(p =head->next; p!=tail && (p->value != val) ; p = p->next )
+    ;
+
+  if (p==tail)
+    return false; // if p have reached the end it will return false
+
+  return true;
+
 }
 
 
@@ -429,8 +464,13 @@ bool Set<T>::is_member (T val) const
 template<typename T>
 int Set<T>::cardinality() const
 {
-    //ADD CODE
-    return 0;
+    int howMany=0;
+
+    for(Node *p=head->next; p != tail ; p=p->next, ++howMany)
+        ;
+
+    return howMany;
+    //return counter ?
 }
 
 
@@ -438,7 +478,19 @@ int Set<T>::cardinality() const
 template<typename T>
 void Set<T>::clear()
 {
-    //ADD CODE
+    if (!is_empty()){
+     Node *p=head->next;
+
+    while(p!=tail){
+        p = p->next;
+        delete p->prev;
+    }
+
+    head->next = tail;
+    tail->prev = head;
+
+    counter = 0;
+    }
 }
 
 //Return true, if the set is a subset of b, otherwise false
@@ -446,8 +498,15 @@ void Set<T>::clear()
 template<typename T>
 bool Set<T>::operator<=(const Set& b) const
 {
-    //ADD CODE
-    return false;
+    if(b.is_empty())
+        return false;
+
+    for(Node *p = head->next; p!=tail; p=p->next ) {
+        if( !b.is_member(p->value) ) // if not a member then return false!
+            return false;
+    }
+
+    return true;
 }
 
 
@@ -456,8 +515,7 @@ bool Set<T>::operator<=(const Set& b) const
 template<typename T>
 bool Set<T>::operator==(const Set& b) const
 {
-    //ADD CODE
-    return false;
+    return (*this <= b && b<=*this); // kollar om exakt lika
 }
 
 
@@ -466,8 +524,7 @@ bool Set<T>::operator==(const Set& b) const
 template<typename T>
 bool Set<T>::operator<(const Set& b) const
 {
-    //ADD CODE
-    return false;
+    return (*this <= b && !(b<=*this));
 }
 
 
@@ -479,7 +536,10 @@ bool Set<T>::operator<(const Set& b) const
 template<typename T>
 Set<T>& Set<T>::insert(Node *p, T val)
 {
-    //ADD CODE
+    p->prev = p->prev->next = new Node(val,p,p->prev);
+
+    ++counter;
+
     return *this;
 }
 
@@ -488,7 +548,13 @@ Set<T>& Set<T>::insert(Node *p, T val)
 template<typename T>
 Set<T>& Set<T>::erase(Node *p)
 {
-    //ADD CODE
+    p->prev->next = p->next;
+    p->next->prev = p->prev;
+
+    delete p;
+
+    --counter;
+
     return *this;
 }
 
@@ -496,7 +562,13 @@ Set<T>& Set<T>::erase(Node *p)
 template<typename T>
 void Set<T>::init()
 {
-    //ADD CODE
+    head = new Node();
+    tail = new Node(T(),nullptr, head); // null?
+
+    head->next = tail;
+
+    counter = 0;
+
 }
 
 
@@ -504,7 +576,10 @@ void Set<T>::init()
 template<typename T>
 void Set<T>::print(ostream& os) const
 {
-    //ADD CODE
+    os << "{ ";
+    for(Node *p = head->next; p!=tail; p = p->next)
+        os << p->value << " ";
+    os << "}";
 }
 
 
@@ -513,8 +588,40 @@ void Set<T>::print(ostream& os) const
 template<typename T>
 Set<T> Set<T>::_union(const Set& b) const
 {
-    //ADD CODE
-    return *this;
+    Set<T> newUnionSet;
+
+    Node *set1 = head->next;
+    Node *set2 = b.head->next;
+
+    // do until one set has reached the end
+    while (set1 != tail && set2!=b.tail){
+        if(set1->value > set2->value) {
+            newUnionSet.insert(newUnionSet.tail, set2->value);
+            set2 = set2->next;
+        }
+        else if (set2->value > set1->value){
+            newUnionSet.insert(newUnionSet.tail, set1->value);
+            set1 = set1->next;
+        }
+        else{ // lika, kopiera ett värde
+            newUnionSet.insert(newUnionSet.tail, set1->value);
+            set2=set2->next;
+            set1=set1->next;
+        }
+
+    }
+
+    // if it reamining stuff from one set
+    while(set1 != tail){
+        newUnionSet.insert(newUnionSet.tail, set1->value);
+        set1 = set1->next;
+    }
+    while(set2 != b.tail){
+        newUnionSet.insert(newUnionSet.tail, set2->value);
+        set2 = set2->next;
+    }
+
+    return newUnionSet;
 }
 
 
@@ -523,8 +630,14 @@ Set<T> Set<T>::_union(const Set& b) const
 template<typename T>
 Set<T> Set<T>::_intersection(const Set& b) const
 {
-    //ADD CODE
-    return *this;
+    Set<T> newIntersectionSet;
+
+    for(Node *p = b.head->next; p!=b.tail; p=p->next){
+        if( is_member(p->value) )
+            newIntersectionSet.insert(newIntersectionSet.tail, p->value);
+    }
+
+    return newIntersectionSet;
 }
 
 
@@ -533,8 +646,14 @@ Set<T> Set<T>::_intersection(const Set& b) const
 template<typename T>
 Set<T> Set<T>::_difference(const Set& b) const
 {
-    //ADD CODE
-    return *this;
+    Set<T> newDifferenceSet;
+
+    for(Node *p = head->next; p!=tail; p=p->next){
+        if( !b.is_member(p->value) ) // only add if the value of this do not exist in set 2
+            newDifferenceSet.insert(newDifferenceSet.tail, p->value);
+    }
+
+    return newDifferenceSet;
 }
 
 
