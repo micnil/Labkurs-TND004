@@ -51,7 +51,14 @@ int nextPrime( int n )
 HashTable::HashTable(int tableSize, HASH f, int ml)
  : h(f), MAX_LOAD(ml)
 {
-   //ADD CODE
+    // make the size of the table a prime number
+    int sizeOfTable = ( isPrime(tableSize) ) ?  tableSize : nextPrime(tableSize);
+
+    // create the theLists
+
+    theLists.resize(sizeOfTable);
+
+    // HMM. är detta rätt? kolla på sen lite extra.
 }
 
 
@@ -60,7 +67,19 @@ HashTable::HashTable(int tableSize, HASH f, int ml)
 //TO IMPLEMENT
 void HashTable::makeEmpty()
 {
-    //ADD CODE
+    // for every list in theLists, go through the items in that list
+    // and delete them.
+    for (list<Item*> collisionList : theLists){
+
+        std::list<Item*>::iterator it;
+        for (it = collisionList.begin(); it!=collisionList.end(); ++it)
+            collisionList.erase(it);
+            // DELETE item itself also
+
+
+    }
+
+    // HMM. kolla lite mera på!
 }
 
 
@@ -79,8 +98,8 @@ HashTable::~HashTable()
 //TO IMPLEMENT
 double HashTable::loadFactor() const
 {
-    //ADD CODE
-    return 0;
+    // load factor, numOfItems / numOfSlots
+    return double(nItems) / theLists.size();
 }
 
 
@@ -94,6 +113,8 @@ void HashTable::reHash()
         << loadFactor() << endl;
 
     //ADD CODE
+    //Create new hashTable (vector) with double size of previous.
+    //rehash (move over) old elements
 
      cout << "** Re-hashing completed ..." << endl;
      cout << "Hash table load factor = "
@@ -107,7 +128,18 @@ void HashTable::reHash()
 //TO IMPLEMENT
 Item* HashTable::find(string x) const
 {
-   //ADD CODE
+   // use hashfunction on the word x to find the right slot.
+   unsigned slotNumber = h(x);
+
+   list<Item*> collisionList = theLists[slotNumber];
+
+   // search through the collision list (in that slot) to find a match
+   std::list<Item*>::iterator it;
+   for (it = collisionList.begin(); it!=collisionList.end(); ++it) {
+        if(*it.word == x )
+            return it
+   }
+
    return nullptr;
 }
 
@@ -118,8 +150,13 @@ Item* HashTable::find(string x) const
 //TO IMPLEMENT
 Item* HashTable::insert(string w, short i)
 {
-    //ADD CODE
-   return nullptr;
+    Item *newItem = new Item(w,i);
+    int slotNumber = h(w);
+
+    list<Item*> collisionList = theLists[slotNumber];
+    collisionList.insert(collisionList.begin(),newItem);
+
+    return newItem;
 }
 
 
@@ -130,6 +167,11 @@ Item* HashTable::insert(string w, short i)
 bool HashTable::remove(string w)
 {
     //ADD CODE
+    int slotNumber = h(w);
+
+    list<Item*> collisionList = theLists[slotNumber];
+
+
     return false;
 }
 

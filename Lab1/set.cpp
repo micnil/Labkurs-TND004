@@ -425,9 +425,10 @@ template<typename T>
 Set<T>& Set<T>::operator=(const Set& b)
 {
   if(this != &b) { // test if self-assignment
-    this->~Set();
-
-    init();
+//    this->~Set();
+//
+//    init();
+    clear();
     for(Node *p=b.head->next; p!=b.tail; p=p->next)
       insert(tail,p->value);
   }
@@ -464,13 +465,7 @@ bool Set<T>::is_member (T val) const
 template<typename T>
 int Set<T>::cardinality() const
 {
-    int howMany=0;
-
-    for(Node *p=head->next; p != tail ; p=p->next, ++howMany)
-        ;
-
-    return howMany;
-    //return counter ?
+    return counter;
 }
 
 
@@ -498,16 +493,30 @@ void Set<T>::clear()
 template<typename T>
 bool Set<T>::operator<=(const Set& b) const
 {
-    if(b.is_empty())
+    if(b.is_empty() || cardinality() > b.cardinality())
         return false;
 
-    for(Node *p = head->next; p!=tail; p=p->next ) {
-        if( !b.is_member(p->value) ) // if not a member then return false!
+    Node *set1 = head->next;
+    Node *set2 = b.head->next;
+
+    while (set1 != tail) {
+        if(set1->value > set2->value) {
+            set2 = set2->next;
+        }
+        else if (set2->value > set1->value){
             return false;
+        }
+        else{ // lika, kopiera ett värde
+            set2=set2->next;
+            set1=set1->next;
+        }
+
     }
 
     return true;
 }
+
+
 
 
 //Return true, if the set is equal to set b
@@ -630,14 +639,37 @@ Set<T> Set<T>::_union(const Set& b) const
 template<typename T>
 Set<T> Set<T>::_intersection(const Set& b) const
 {
-    Set<T> newIntersectionSet;
+    Set<T> newIntersection;
+
+    Node *set1 = head->next;
+    Node *set2 = b.head->next;
+
+    // do until one set has reached the end
+    while (set1 != tail && set2!=b.tail){
+        if(set1->value > set2->value) {
+            set2 = set2->next;
+        }
+        else if (set2->value > set1->value){
+            set1 = set1->next;
+        }
+        else{ // lika, kopiera ett värde
+            newIntersection.insert(newIntersection.tail, set1->value);
+            set2=set2->next;
+            set1=set1->next;
+        }
+
+    }
+
+    return newIntersection;
+
+    /*Set<T> newIntersectionSet;
 
     for(Node *p = b.head->next; p!=b.tail; p=p->next){
         if( is_member(p->value) )
             newIntersectionSet.insert(newIntersectionSet.tail, p->value);
     }
 
-    return newIntersectionSet;
+    return newIntersection Set;*/
 }
 
 
@@ -648,12 +680,43 @@ Set<T> Set<T>::_difference(const Set& b) const
 {
     Set<T> newDifferenceSet;
 
+    Node *set1 = head->next;
+    Node *set2 = b.head->next;
+
+    // do until one set has reached the end
+    while (set1 != tail && set2!=b.tail){
+        if(set1->value > set2->value) {
+            set2 = set2->next;
+        }
+        else if (set2->value > set1->value){
+            newDifferenceSet.insert(newDifferenceSet.tail, set1->value);
+            set1 = set1->next;
+        }
+        else{ // lika, kopiera ett värde
+            set2=set2->next;
+            set1=set1->next;
+        }
+
+    }
+
+    // if it reamining stuff from one set
+    while(set1 != tail){
+        newDifferenceSet.insert(newDifferenceSet.tail, set1->value);
+        set1 = set1->next;
+    }
+
+    return newDifferenceSet;
+
+/*
+    Set<T> newDifferenceSet;
+
     for(Node *p = head->next; p!=tail; p=p->next){
         if( !b.is_member(p->value) ) // only add if the value of this do not exist in set 2
             newDifferenceSet.insert(newDifferenceSet.tail, p->value);
     }
 
     return newDifferenceSet;
+    */
 }
 
 
