@@ -57,6 +57,8 @@ HashTable::HashTable(int tableSize, HASH f, int ml)
     // create the theLists
 
     theLists.resize(sizeOfTable);
+    
+    nItems=0;
 
     // HMM. är detta rätt? kolla på sen lite extra.
 }
@@ -74,9 +76,7 @@ void HashTable::makeEmpty()
         std::list<Item*>::iterator it;
         for (it = collisionList.begin(); it!=collisionList.end(); ++it)
             collisionList.erase(it);
-            // DELETE item itself also
-
-
+            // DELETE item itself also?
     }
 
     // HMM. kolla lite mera på!
@@ -129,15 +129,15 @@ void HashTable::reHash()
 Item* HashTable::find(string x) const
 {
    // use hashfunction on the word x to find the right slot.
-   unsigned slotNumber = h(x);
+   unsigned slotNumber = h(x, (int)theLists.size());
 
    list<Item*> collisionList = theLists[slotNumber];
-
+    
    // search through the collision list (in that slot) to find a match
    std::list<Item*>::iterator it;
-   for (it = collisionList.begin(); it!=collisionList.end(); ++it) {
-        if(*it.word == x )
-            return it
+   for (it = collisionList.begin(); it!=collisionList.end(); it++) {
+        if( (*it)->word == x )
+            return *it;
    }
 
    return nullptr;
@@ -151,11 +151,14 @@ Item* HashTable::find(string x) const
 Item* HashTable::insert(string w, short i)
 {
     Item *newItem = new Item(w,i);
-    int slotNumber = h(w);
+    int slotNumber = h(w, (int)theLists.size());
+    
+    theLists[slotNumber].push_back(newItem);
 
-    list<Item*> collisionList = theLists[slotNumber];
-    collisionList.insert(collisionList.begin(),newItem);
+    //collisionList.insert(collisionList.begin(),newItem);
 
+    ++nItems;
+    // ška pŒ nItems
     return newItem;
 }
 
@@ -166,12 +169,22 @@ Item* HashTable::insert(string w, short i)
 //TO IMPLEMENT
 bool HashTable::remove(string w)
 {
+    
     //ADD CODE
-    int slotNumber = h(w);
+    int slotNumber = h(w, (int)theLists.size());
 
     list<Item*> collisionList = theLists[slotNumber];
 
+    Item* removeString = find(w);
 
+    //remove removeString from hashtable
+
+    if(removeString){
+        collisionList.remove(removeString);
+        return true;
+        --nItems;
+    }
+    
     return false;
 }
 
@@ -180,7 +193,15 @@ bool HashTable::remove(string w)
 //TO IMPLEMENT
 ostream& operator <<(ostream& os, const HashTable& T)
 {
+    
    //ADD CODE
+      for (list<Item*> collisionList : T.theLists){
+          //cout << endl << "length: " << collisionList.size() << endl;
+
+        std::list<Item*>::iterator it;
+        for (it = collisionList.begin(); it!=collisionList.end(); ++it)
+            cout << *(*it);
+      }
     return os;
 }
 
