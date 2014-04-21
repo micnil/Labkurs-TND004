@@ -54,13 +54,12 @@ HashTable::HashTable(int tableSize, HASH f, int ml)
     // make the size of the table a prime number
     int sizeOfTable = ( isPrime(tableSize) ) ?  tableSize : nextPrime(tableSize);
 
-    // create the theLists
-
+    // är detta verkligen rätt sätt?
     theLists.resize(sizeOfTable);
     
     nItems=0;
-
-    // HMM. ‰r detta r‰tt? kolla pÂ sen lite extra.
+    
+    cout << "Size of the table: " << sizeOfTable << endl;
 }
 
 
@@ -128,19 +127,19 @@ void HashTable::reHash()
 //TO IMPLEMENT
 Item* HashTable::find(string x) const
 {
-   // use hashfunction on the word x to find the right slot.
-   unsigned slotNumber = h(x, (int)theLists.size());
-
-   list<Item*> collisionList = theLists[slotNumber];
+    // use hashfunction on the word x to find the right slot.
+    unsigned slotNumber = h(x, (int)theLists.size());
+    list<Item*> collisionList = theLists[slotNumber];
     
-   // search through the collision list (in that slot) to find a match
-   std::list<Item*>::iterator it;
-   for (it = collisionList.begin(); it!=collisionList.end(); it++) {
-        if( (*it)->word == x )
-            return *it;
-   }
+    // search through the collision list (in that slot) to find a match
+    std::list<Item*>::iterator it;
+    for (it = collisionList.begin(); it!=collisionList.end(); it++) {
+        if( (*it)->word == x ) {
+           return *it;
+        }
+    }
 
-   return nullptr;
+    return nullptr;
 }
 
 
@@ -150,13 +149,14 @@ Item* HashTable::find(string x) const
 //TO IMPLEMENT
 Item* HashTable::insert(string w, short i)
 {
-    Item *newItem = new Item(w,i);
+    Item *newItem = new Item(w,i); // creates the item
+    
     int slotNumber = h(w, (int)theLists.size());
     
     theLists[slotNumber].push_back(newItem);
 
     //collisionList.insert(collisionList.begin(),newItem);
-
+    
     ++nItems;
     // öka på nItems
     return newItem;
@@ -170,19 +170,19 @@ Item* HashTable::insert(string w, short i)
 bool HashTable::remove(string w)
 {
     
-    //ADD CODE
+    // find where to look in the hash table
     int slotNumber = h(w, (int)theLists.size());
 
+    // pick that specific list from theLists
     list<Item*> collisionList = theLists[slotNumber];
 
     Item* removeString = find(w);
 
-    //remove removeString from hashtable
-
-    if(removeString){
+    // if found, remove and return true. otherwise false
+    if(!removeString){
         collisionList.remove(removeString);
-        return true;
         --nItems;
+        return true;
     }
     
     return false;
@@ -193,15 +193,11 @@ bool HashTable::remove(string w)
 //TO IMPLEMENT
 ostream& operator <<(ostream& os, const HashTable& T)
 {
-    
-   //ADD CODE
-      for (list<Item*> collisionList : T.theLists){
-          //cout << endl << "length: " << collisionList.size() << endl;
-
-        std::list<Item*>::iterator it;
+    for (list<Item*> collisionList : T.theLists){
+        list<Item*>::iterator it;
         for (it = collisionList.begin(); it!=collisionList.end(); ++it)
             cout << *(*it);
-      }
+    }
     return os;
 }
 
