@@ -42,6 +42,29 @@ bool isNotAlpha(char c)
 //TO IMPLEMENT
 SpellChecker::SpellChecker(string fileName, int n)
 {
+    // when creating the dictionary, set the max load factor allowed.
+    // HashTable(tableSize, hashFunction, max_load) anroppa på detta sätt typ
+
+    dictionary = new HashTable(n, my_hash, 2);
+
+    // read in all the words from file and add to dictionary
+    ifstream file(fileName);
+    if (!file) {
+        cerr << "Dictionary file could not be opened!!" << endl;
+        exit(1);
+    }
+
+    //load the dictionary
+    string w;
+
+    while(file >> ws && getline(file, w,'\r')) // på mac behövs '\r', annars ska det vara '\n'
+    {
+        addWord(w); 
+    }
+
+
+    nWords = n;
+
     //ADD CODE
 }
 
@@ -72,6 +95,27 @@ bool SpellChecker::testSpelling(string w)
     if (w == "") return true; //case of a word consisting only of punctuation signs
 
     //ADD CODE
+    Item* word = dictionary->find(w);
+    if(word && word->counter==0)
+        return true;
+    else if(word && word->counter > 0){
+        word->counter++;
+        return false;
+    }
+    else
+    {
+        Item* newItem = dictionary->insert(w,1);
+        misspellings.push_front(newItem);
+        
+        // do stuff!
+        // if not in the dictionary, add
+        // also add to the misspellings
+        return false;
+    }
+
+
+
+
     return false;
 }
 
@@ -81,6 +125,9 @@ bool SpellChecker::testSpelling(string w)
 //TO IMPLEMENT
 void SpellChecker::addWord(string w)
 {
+    // behövs det kollas hur många ord som redan finns??
+    dictionary->insert(w,0);
+
     //ADD CODE
 }
 
@@ -101,6 +148,12 @@ void SpellChecker::createLog(ostream& os)
 {
     os << "*** LIST OF MISSPELLINGS" << endl;
     os << "=========================" << endl;
+
+    // go trough the list of misspellings and show
+    list<Item*>::iterator it;
+    for (it = misspellings.begin(); it!=misspellings.end(); ++it){
+        os << *(*it);
+    }
 
     //ADD CODE
 }
