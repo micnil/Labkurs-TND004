@@ -104,6 +104,7 @@ class SpellChecker
 
    //ADD other needed data members
     // TO DO !!
+    list<Item*> addedWords; // added myself
 
     /** \brief Disabled copy constructor.
     *

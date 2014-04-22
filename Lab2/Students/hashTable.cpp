@@ -211,6 +211,9 @@ bool HashTable::remove(string w)
         collisionList.remove(removeString);
         theLists[slotNumber] = collisionList; //FULT SÄTT. HUR GÖRA IST? måste ju skriva över den som finns i klassen.
         --nItems;
+        
+        cout << "removed = " << w << endl; // testningssyfte för spellChecker. 
+        
         return true;
     }
     

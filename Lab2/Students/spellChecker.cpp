@@ -59,7 +59,7 @@ SpellChecker::SpellChecker(string fileName, int n)
 
     while(file >> ws && getline(file, w,'\r')) // på mac behövs '\r', annars ska det vara '\n'
     {
-        addWord(w); 
+        dictionary->insert(w,0);
     }
 
 
@@ -100,11 +100,13 @@ bool SpellChecker::testSpelling(string w)
         return true;
     else if(word && word->counter > 0){
         word->counter++;
+        //nWords++; // ?
         return false;
     }
     else
     {
         Item* newItem = dictionary->insert(w,1);
+        //nWords++;
         misspellings.push_front(newItem);
         
         // do stuff!
@@ -126,7 +128,10 @@ bool SpellChecker::testSpelling(string w)
 void SpellChecker::addWord(string w)
 {
     // behövs det kollas hur många ord som redan finns??
-    dictionary->insert(w,0);
+    Item* word = dictionary->insert(w,0);
+    addedWords.push_front(word);
+    nWords++;
+    // ska nog ha ngt annat här, syftar nog på när man lägger till nya ord i ordlistan
 
     //ADD CODE
 }
@@ -137,6 +142,20 @@ void SpellChecker::addWord(string w)
 //TO IMPLEMENT
 void SpellChecker::clean()
 {
+    // TO DO : remove from the dictionary!
+    
+    // tar bort från dictionary
+    list<Item*>::iterator it;
+    for (it = addedWords.begin(); it!=addedWords.end(); ++it){
+        dictionary->remove((*it)->word);
+    }
+    
+    // tömmer listan
+    for (it = addedWords.begin(); it!=addedWords.end(); ++it){
+        addedWords.erase(it);
+    }
+    
+    
     //ADD CODE
 }
 
@@ -153,6 +172,11 @@ void SpellChecker::createLog(ostream& os)
     list<Item*>::iterator it;
     for (it = misspellings.begin(); it!=misspellings.end(); ++it){
         os << *(*it);
+    }
+    
+    // rensa listan
+    for (it = misspellings.begin(); it!=misspellings.end(); ++it){
+        misspellings.erase(it);
     }
 
     //ADD CODE
