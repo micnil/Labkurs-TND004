@@ -175,11 +175,11 @@ Item* HashTable::find(string x) const
 //TO IMPLEMENT
 Item* HashTable::insert(string w, short i)
 {
+    ++nItems; // öka på först för att kunna kolla iaf över MAX_LOAD lr inte.
     
     // check if need to rehash..
-    if(loadFactor() >=  MAX_LOAD)
+    if(loadFactor() >  MAX_LOAD)
         reHash();
-
     
     Item *newItem = new Item(w,i); // creates the item
     
@@ -187,10 +187,6 @@ Item* HashTable::insert(string w, short i)
     
     theLists[slotNumber].push_back(newItem);
 
-    //collisionList.insert(collisionList.begin(),newItem);
-    
-    ++nItems;
-    // öka på nItems
     return newItem;
 }
 
@@ -211,20 +207,30 @@ bool HashTable::remove(string w)
     Item* removeString = find(w);
 
     // if found, remove and return true. otherwise false
-    if(!removeString){
+    if(removeString!=nullptr){
         collisionList.remove(removeString);
+        theLists[slotNumber] = collisionList; //FULT SÄTT. HUR GÖRA IST? måste ju skriva över den som finns i klassen.
         --nItems;
         return true;
     }
     
     return false;
+    
+    
 }
-
 
 //Overloaded operator<<: outputs all items to stream os
 //TO IMPLEMENT
 ostream& operator <<(ostream& os, const HashTable& T)
 {
+    /**bara info från mig, snyggare output. ta bort sen
+     var för att kunna jämföra med exempel-txt-filen som hon skickade med **/
+    cout << endl;
+    cout << "Size = " << T.theLists.size() << endl;
+    cout << "Number of items in the table = " << T.nItems << endl;
+    cout << "Load factor = " << T.loadFactor() << endl;
+    /****************************************************/
+    
     for (list<Item*> collisionList : T.theLists){
         list<Item*>::iterator it;
         for (it = collisionList.begin(); it!=collisionList.end(); ++it)
