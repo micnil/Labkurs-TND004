@@ -54,11 +54,12 @@ HashTable::HashTable(int tableSize, HASH f, int ml)
     // make the size of the table a prime number
     int sizeOfTable = ( isPrime(tableSize) ) ?  tableSize : nextPrime(tableSize);
 
-    // create the theLists
-
+    // är detta verkligen rätt sätt?
     theLists.resize(sizeOfTable);
-
-    // HMM. ‰r detta r‰tt? kolla pÂ sen lite extra.
+    
+    nItems=0;
+    
+    cout << "Size of the table: " << sizeOfTable << endl;
 }
 
 
@@ -74,9 +75,7 @@ void HashTable::makeEmpty()
         std::list<Item*>::iterator it;
         for (it = collisionList.begin(); it!=collisionList.end(); ++it)
             collisionList.erase(it);
-            // DELETE item itself also
-
-
+            // DELETE item itself also?
     }
 
     // HMM. kolla lite mera pÂ!
@@ -114,12 +113,38 @@ void HashTable::reHash()
 
     //ADD CODE
     //Create new hashTable (vector) with double size of previous.
+    int newSize = (int)theLists.size()*2; // bad to do this conversion maybe.
+    int sizeOfTable = ( isPrime(newSize) ) ?  newSize : nextPrime(newSize);
+    
+    vector<list<Item*>> rehashedList;
+    rehashedList.resize(sizeOfTable);
+    
+    for (list<Item*> collisionList : theLists){
+        list<Item*>::iterator it;
+        for (it = collisionList.begin(); it!=collisionList.end(); ++it){
+            string x = (*it)->word;
+            unsigned slotNumber = h(x, (int)rehashedList.size());
+            rehashedList[slotNumber].push_back(*it);
+            
+        }
+    }
+    theLists = rehashedList;
+
+    // go trough all elements in the vector theLists
+        // go trough all the list of items in theLists
+        // use the hash-function to know the new slot
+        // then place it in the new hashed table
+    
+    
     //rehash (move over) old elements
 
      cout << "** Re-hashing completed ..." << endl;
      cout << "Hash table load factor = "
           << fixed << setprecision(2)
           << loadFactor() << endl;
+    
+    
+    // shit detta kommer krascha!!! 
  }
 
 
@@ -128,19 +153,19 @@ void HashTable::reHash()
 //TO IMPLEMENT
 Item* HashTable::find(string x) const
 {
-   // use hashfunction on the word x to find the right slot.
-   unsigned slotNumber = h(x);
+    // use hashfunction on the word x to find the right slot.
+    unsigned slotNumber = h(x, (int)theLists.size());
+    list<Item*> collisionList = theLists[slotNumber];
+    
+    // search through the collision list (in that slot) to find a match
+    std::list<Item*>::iterator it;
+    for (it = collisionList.begin(); it!=collisionList.end(); it++) {
+        if( (*it)->word == x ) {
+           return *it;
+        }
+    }
 
-   list<Item*> collisionList = theLists[slotNumber];
-
-   // search through the collision list (in that slot) to find a match
-   std::list<Item*>::iterator it;
-   for (it = collisionList.begin(); it!=collisionList.end(); ++it) {
-        if(*it.word == x )
-            return it
-   }
-
-   return nullptr;
+    return nullptr;
 }
 
 
@@ -150,11 +175,17 @@ Item* HashTable::find(string x) const
 //TO IMPLEMENT
 Item* HashTable::insert(string w, short i)
 {
-    Item *newItem = new Item(w,i);
-    int slotNumber = h(w);
-
-    list<Item*> collisionList = theLists[slotNumber];
-    collisionList.insert(collisionList.begin(),newItem);
+    ++nItems; // öka på först för att kunna kolla iaf över MAX_LOAD lr inte.
+    
+    // check if need to rehash..
+    if(loadFactor() >  MAX_LOAD)
+        reHash();
+    
+    Item *newItem = new Item(w,i); // creates the item
+    
+    int slotNumber = h(w, (int)theLists.size());
+    
+    theLists[slotNumber].push_back(newItem);
 
     return newItem;
 }
@@ -166,21 +197,45 @@ Item* HashTable::insert(string w, short i)
 //TO IMPLEMENT
 bool HashTable::remove(string w)
 {
-    //ADD CODE
-    int slotNumber = h(w);
+    
+    // find where to look in the hash table
+    int slotNumber = h(w, (int)theLists.size());
 
+    // pick that specific list from theLists
     list<Item*> collisionList = theLists[slotNumber];
 
+    Item* removeString = find(w);
 
+    // if found, remove and return true. otherwise false
+    if(removeString!=nullptr){
+        collisionList.remove(removeString);
+        theLists[slotNumber] = collisionList; //FULT SÄTT. HUR GÖRA IST? måste ju skriva över den som finns i klassen.
+        --nItems;
+        return true;
+    }
+    
     return false;
+    
+    
 }
-
 
 //Overloaded operator<<: outputs all items to stream os
 //TO IMPLEMENT
 ostream& operator <<(ostream& os, const HashTable& T)
 {
-   //ADD CODE
+    /**bara info från mig, snyggare output. ta bort sen
+     var för att kunna jämföra med exempel-txt-filen som hon skickade med **/
+    cout << endl;
+    cout << "Size = " << T.theLists.size() << endl;
+    cout << "Number of items in the table = " << T.nItems << endl;
+    cout << "Load factor = " << T.loadFactor() << endl;
+    /****************************************************/
+    
+    for (list<Item*> collisionList : T.theLists){
+        list<Item*>::iterator it;
+        for (it = collisionList.begin(); it!=collisionList.end(); ++it)
+            cout << *(*it);
+    }
     return os;
 }
 
