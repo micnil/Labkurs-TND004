@@ -73,8 +73,9 @@ SpellChecker::SpellChecker(string fileName, int n)
 //TO IMPLEMENT
 SpellChecker::~SpellChecker()
 {
-   //ADD CODE
-
+   // rensa alla vectorer på deras item. 
+    
+    
    cout << "** Spell Checker Destructor" << endl;
 }
 
@@ -103,22 +104,13 @@ bool SpellChecker::testSpelling(string w)
         //nWords++; // ?
         return false;
     }
-    else
-    {
+    else {
         Item* newItem = dictionary->insert(w,1);
         //nWords++;
         misspellings.push_front(newItem);
-        
-        // do stuff!
-        // if not in the dictionary, add
-        // also add to the misspellings
+
         return false;
     }
-
-
-
-
-    return false;
 }
 
 
@@ -128,12 +120,11 @@ bool SpellChecker::testSpelling(string w)
 void SpellChecker::addWord(string w)
 {
     // behövs det kollas hur många ord som redan finns??
-    Item* word = dictionary->insert(w,0);
-    addedWords.push_front(word);
-    nWords++;
-    // ska nog ha ngt annat här, syftar nog på när man lägger till nya ord i ordlistan
-
-    //ADD CODE
+    if( !dictionary->find(w) ){
+        Item* word = dictionary->insert(w,0);
+        addedWords.push_front(word);
+        nWords++;
+    }
 }
 
 
@@ -142,8 +133,6 @@ void SpellChecker::addWord(string w)
 //TO IMPLEMENT
 void SpellChecker::clean()
 {
-    // TO DO : remove from the dictionary!
-    
     // tar bort från dictionary
     list<Item*>::iterator it;
     for (it = addedWords.begin(); it!=addedWords.end(); ++it){
@@ -156,7 +145,6 @@ void SpellChecker::clean()
     }
     
     
-    //ADD CODE
 }
 
 
@@ -176,6 +164,7 @@ void SpellChecker::createLog(ostream& os)
     
     // rensa listan
     for (it = misspellings.begin(); it!=misspellings.end(); ++it){
+        dictionary->remove((*it)->word);
         misspellings.erase(it);
     }
 
