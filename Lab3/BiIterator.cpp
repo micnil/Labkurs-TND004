@@ -25,38 +25,39 @@ BiIterator::BiIterator(Node *ptr)
 //Dereferencing operator
 ELEMENT& BiIterator::operator*() const
 {
-    //ADD CODE
+    return current->value;
 }
 
 
 //Member access operator
 ELEMENT* BiIterator::operator->() const
 {
-    //ADD CODE
-    return nullptr;
+    return &(current->value);
 }
 
 
 //Equality comparison operator
 bool BiIterator::operator==(const BiIterator &it) const
 {
-    //ADD CODE
-    return false;
+    // if same they return 0. 
+    return !(current->value.first).compare(it.current->value.first);
 }
 
 
 //Inequality comparison operator
 bool BiIterator::operator!=(const BiIterator &it) const
 {
-   //ADD CODE
-    return false;
+    return ( (current->value.first).compare(it.current->value.first) !=0 );
 }
 
 
 //Pre increment operator
 BiIterator& BiIterator::operator++()
 {
-   //ADD CODE
+    if(!current->r_thread)
+        current = current->right->findMin(); // find the smallest node of the right subtree
+    else
+        current = current->right; // follow right thread
     return *this;
 }
 
@@ -64,23 +65,32 @@ BiIterator& BiIterator::operator++()
 
 //Pos increment operator: see page 277 and 278 of C++ direkt
 BiIterator BiIterator::operator++(int)
-{
-   //ADD CODE
-    return *this;
+{    
+    BiIterator temp = *this;
+    ++(*this);
+    
+    return temp;
 }
 
 //Pre decrement operator
 BiIterator& BiIterator::operator--()
 {
-   //ADD CODE
+    if(!current->l_thread)
+        current = current->left->findMax();
+    else
+        current = current->left;
+    
     return *this;
 }
 
 //Pos decrement operator
 BiIterator BiIterator::operator--(int)
 {
-   //ADD CODE
-    return *this;
+    BiIterator temp = *this;
+    --(*this);
+    
+    return temp;
+
 }
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */

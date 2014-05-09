@@ -32,13 +32,35 @@ Node::~Node()
 bool Node::insert(ELEMENT v)
 {
 
-    // create a new Node of the element v.
-    // insert v in the tree having this node as root
+    // the value is smaller, insert at left
+    if ( (v.first).compare(value.first) < 0  ) {
+        if (!l_thread) // the left is not a thread, go deeper down in the tree
+            left->insert(v);
+        else{
+            Node *n = new Node(v, left, this);
+            left = n;
+            left->r_thread = left->l_thread = true;
+            l_thread = false; // den vi Šr i
+            
+            return true;
+        }
+    }
+    // the value is larger, insert at right
+    else if( (v.first).compare(value.first) > 0 ) {
+        if (!r_thread) // go deeper down in the tree
+            right->insert(v);
+        else{
+            Node *n = new Node(v,this, right);
+            right = n;
+            right->r_thread = right->l_thread = true;
+            r_thread = false; // den vi Šr i
+            
+            return true;
+        }
+        
+    }
 
-    // sätt left lr right på denna node till en ny Node med element v
-
-
-
+    // the element already exist in the tree
     return false;
 }
 
@@ -52,6 +74,9 @@ bool Node::insert(ELEMENT v)
 bool Node::remove(string key, Node* parent, bool isRight)
 {
     //ADD CODE
+    
+    // use removeMe here
+    
     return false;
 }
 
@@ -79,7 +104,13 @@ void Node::removeMe(Node* parent, bool isRight)
 //If there is no node storing key then return nullptr
 Node* Node::find(string key)
 {
-    //ADD CODE
+    if(key.compare(value.first) == 0)
+         return this;
+    else if (key.compare(value.first) < 0 && !l_thread)
+        return left->find(key);
+    else if(key.compare(value.first) > 0 && !r_thread)
+        return right->find(key);
+    
     return nullptr;
 }
 
@@ -88,8 +119,11 @@ Node* Node::find(string key)
 //of the tree whose root is this node
 Node* Node::findMin()
 {
-    //ADD CODE
-    return nullptr;
+    Node *n = this;
+    while (!n->l_thread)
+        n = n->left;
+        
+    return n;
 }
 
 
@@ -97,8 +131,11 @@ Node* Node::findMin()
 //of the tree whose root is this node
 Node* Node::findMax()
 {
-    //ADD CODE
-    return nullptr;
+    Node *n = this;
+    while (!n->r_thread)
+        n = n->right;
+    
+    return n;
 }
 
 

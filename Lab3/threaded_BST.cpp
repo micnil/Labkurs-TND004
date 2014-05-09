@@ -22,7 +22,13 @@ BST_threaded::BST_threaded()
 {
     // create a dummy node
     ELEMENT dummy("DUMMY",0);
-    root = new Node(dummy,nullptr,nullptr);
+    root = new Node(dummy);
+    // the root must point at itself
+    root->left = root;
+    root->right = root;
+    // set the flags. see slide 19 on Lecture
+    root->l_thread = true;
+    root->r_thread = true;
 }
 
 
@@ -36,8 +42,8 @@ BST_threaded::~BST_threaded()
 //Test if the tree is empty
 bool BST_threaded::empty() const
 {
-    //is a empty tree if the left child of the root is pointing to a nullptr
-    return (!root->left);
+    // empty if the root left is pointing to the root, if the left thread of the root is true
+    return (root->l_thread);
 
 }
 
@@ -57,6 +63,8 @@ void BST_threaded::insert(ELEMENT v)
         root->left = new Node(v, root, root);
         root->left->l_thread = root->left->r_thread = true;
         counter = 1;
+        
+        root->l_thread = false;
     }
     else
         counter += root->left->insert(v); //call NODE::insert
@@ -66,7 +74,9 @@ void BST_threaded::insert(ELEMENT v)
 //Remove node with key from the tree
 void BST_threaded::remove(string key)
 {
-   //ADD CODE
+    // must go down to the left node since we need the parent
+    if(!empty())
+        root->left->remove(key, root, false); // send in key, parent and if right child
 }
 
 
@@ -77,10 +87,18 @@ void BST_threaded::remove(string key)
 //then behaviour is undefined
 ELEMENT& BST_threaded::operator[](string key)
 {
-    //ADD CODE
-    ELEMENT e("", 0);
-
-    return e; //MUST remove this code
+    return *find(key); // since the BiIterator funcion will return ELEMENT&
+    
+    /*
+    
+    if(!empty()){
+        Node *n = root->left->find(key);
+        
+        if(n)
+            return n->value;
+    }
+     */
+    
 }
 
 
@@ -89,7 +107,13 @@ ELEMENT& BST_threaded::operator[](string key)
 //Otherwise, return this->end().
 BiIterator BST_threaded::find(string key) const
 {
-    //ADD CODE
+    if(!empty()) {
+        Node *ptr = root->left->find(key);
+    
+        if(ptr) // if found in the key
+            return BiIterator(ptr);
+    }
+        
     return end();
 }
 
@@ -98,7 +122,11 @@ BiIterator BST_threaded::find(string key) const
 BiIterator BST_threaded::begin() const
 {
     //ADD CODE
-    return end();
+    if (empty()) return end();
+    Node *ptr = root->left->findMin();//find the smallest node of the tree
+ 
+    BiIterator it(ptr);
+    return it;
 }
 
 
