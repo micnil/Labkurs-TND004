@@ -73,11 +73,36 @@ bool Node::insert(ELEMENT v)
 //isRight==true: this node is right child of parent
 bool Node::remove(string key, Node* parent, bool isRight)
 {
-    //ADD CODE
-    
     // use removeMe here
+    // find the node to remove
     
-    return false;
+    if( key.compare(value.first) < 0 ){
+        if(!l_thread)
+            return remove(key,left,false); // hmm, använda parent ngn stans..
+        else
+            return false;
+    }
+    else if(key.compare(value.first) > 0 ) {
+        if(!r_thread)
+            return remove(key, right, true);
+        else
+            return false;
+    }
+    else{ // they are alike!
+        if(!l_thread && !r_thread){
+            //replace value and then start recursion again! LITE OSÄKER: MKT OSÄKER
+            // http://forums.devshed.com/programming-42/binary-search-tree-remove-function-303429.html
+            value = findMin()->value;
+            return remove(value.first, this, true);
+        }
+        else{
+            //olika fall här.. hmm
+            removeMe(parent,isRight);
+            return true;
+        }
+    }
+    
+    
 }
 
 
@@ -94,7 +119,11 @@ bool Node::remove(string key, Node* parent, bool isRight)
 //2c: a right child with no children
 void Node::removeMe(Node* parent, bool isRight)
 {
-   //ADD CODE
+    if(!isRight){ // the node is a left child of parent
+        if(!r_thread){   // has a right child
+            // flytta en jävla massa pekare..
+        }
+    }
 }
 
 
