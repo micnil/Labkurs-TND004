@@ -120,8 +120,38 @@ bool Node::remove(string key, Node* parent, bool isRight)
 void Node::removeMe(Node* parent, bool isRight)
 {
     if(!isRight){ // the node is a left child of parent
-        if(!r_thread){   // has a right child
+        if(!r_thread && !l_thread){ // no children
+            parent->l_thread = true;
+            parent->left = this->left;
+            delete this;
+        }
+        else if(!r_thread){   // has only a right child
             // flytta en jŠvla massa pekare..
+            parent->left = this->right;
+            this->right->left = this->left;
+            delete this;
+        }
+        else if(!l_thread){ // has only a left child
+            parent->left = this->left;
+            this->left->right = this->right;
+            delete this;
+        }
+    }
+    else { // the node is a right child of parent
+        if(!r_thread && !l_thread){ // no children
+            parent->r_thread = true;
+            parent->right = this->right;
+            delete this;
+        }
+        else if(!r_thread){   // has only a right child
+            parent->right = this->right;
+            this->right->left= this->left;
+            delete this;
+        }
+        else if(!l_thread){ // has only a left child
+            parent->right = this->right;
+            this->left->right = this->right;
+            delete this;
         }
     }
 }
