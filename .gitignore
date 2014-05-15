@@ -12,4 +12,6 @@
 *.la
 *.a
 
+*.cbp
+*.depend
 Lab1/main
