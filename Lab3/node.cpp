@@ -41,7 +41,7 @@ bool Node::insert(ELEMENT v)
             left = n;
             left->r_thread = left->l_thread = true;
             l_thread = false; // den vi Šr i
-            
+
             return true;
         }
     }
@@ -54,10 +54,10 @@ bool Node::insert(ELEMENT v)
             right = n;
             right->r_thread = right->l_thread = true;
             r_thread = false; // den vi Šr i
-            
+
             return true;
         }
-        
+
     }
 
     // the element already exist in the tree
@@ -75,16 +75,18 @@ bool Node::remove(string key, Node* parent, bool isRight)
 {
     // use removeMe here
     // find the node to remove
-    
+
     if( key.compare(value.first) < 0 ){
         if(!l_thread)
-            return remove(key,left,false); // hmm, anvŠnda parent ngn stans..
+            //return remove(key,left,false); // hmm, anvŠnda parent ngn stans..
+            return left->remove(key,this,false);
         else
             return false;
     }
     else if(key.compare(value.first) > 0 ) {
         if(!r_thread)
-            return remove(key, right, true);
+            //return remove(key, right, true);
+            return right->remove(key, this, true);
         else
             return false;
     }
@@ -92,20 +94,19 @@ bool Node::remove(string key, Node* parent, bool isRight)
         if(!l_thread && !r_thread){
             //replace value and then start recursion again! LITE OS€KER: MKT OS€KER
             // http://forums.devshed.com/programming-42/binary-search-tree-remove-function-303429.html
-            value = findMin()->value;
-            return remove(value.first, this, true);
+            //value = findMin()->value;
+            //return remove(value.first, this, true);
+            value = right->findMin()->value;
+            return right->remove(value.first, this, true);
         }
         else{
-            //olika fall hŠr.. hmm
             removeMe(parent,isRight);
             return true;
         }
     }
-    
-    
+
+
 }
-
-
 
 //Remove this node -- this node has at most one child
 //isRight==false: this node is left child of parent
@@ -120,37 +121,45 @@ bool Node::remove(string key, Node* parent, bool isRight)
 void Node::removeMe(Node* parent, bool isRight)
 {
     if(!isRight){ // the node is a left child of parent
-        if(!r_thread && !l_thread){ // no children
+            //här har jag ändrat
+        if(r_thread && l_thread){ // no children
             parent->l_thread = true;
             parent->left = this->left;
+            std::cout<< "Removed1: " << value.first << endl;
             delete this;
         }
         else if(!r_thread){   // has only a right child
             // flytta en jŠvla massa pekare..
             parent->left = this->right;
             this->right->left = this->left;
+            std::cout<< "Removed2: " << value.first << endl;
             delete this;
         }
         else if(!l_thread){ // has only a left child
             parent->left = this->left;
             this->left->right = this->right;
+            std::cout<< "Removed3: " << value.first << endl;
             delete this;
         }
     }
     else { // the node is a right child of parent
-        if(!r_thread && !l_thread){ // no children
+        //Här har jag ändrat
+        if(r_thread && l_thread){ // no children
             parent->r_thread = true;
             parent->right = this->right;
+            std::cout<< "Removed4: " << value.first << endl;
             delete this;
         }
         else if(!r_thread){   // has only a right child
             parent->right = this->right;
             this->right->left= this->left;
+            std::cout<< "Removed5: " << value.first << endl;
             delete this;
         }
         else if(!l_thread){ // has only a left child
             parent->right = this->right;
             this->left->right = this->right;
+            std::cout<< "Removed6: " << value.first << endl;
             delete this;
         }
     }
@@ -169,7 +178,7 @@ Node* Node::find(string key)
         return left->find(key);
     else if(key.compare(value.first) > 0 && !r_thread)
         return right->find(key);
-    
+
     return nullptr;
 }
 
@@ -181,7 +190,7 @@ Node* Node::findMin()
     Node *n = this;
     while (!n->l_thread)
         n = n->left;
-        
+
     return n;
 }
 
@@ -193,7 +202,7 @@ Node* Node::findMax()
     Node *n = this;
     while (!n->r_thread)
         n = n->right;
-    
+
     return n;
 }
 
