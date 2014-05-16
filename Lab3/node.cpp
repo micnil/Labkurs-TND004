@@ -22,7 +22,8 @@ Node::Node(ELEMENT v, Node *l, Node *r)
 //recursively deletes the nodes in the left_subtree and right-subtree
 Node::~Node()
 {
-    //ADD CODE
+    if (!l_thread) delete left;  //destructor called recursively for left child node
+    if (!r_thread) delete right; //destructor called recursively for right child node
 }
 
 
@@ -33,34 +34,34 @@ bool Node::insert(ELEMENT v)
 {
 
     // the value is smaller, insert at left
-    if ( (v.first).compare(value.first) < 0  ) {
-        if (!l_thread) // the left is not a thread, go deeper down in the tree
-            left->insert(v);
+    if ( v.first < value.first /*(v.first).compare(value.first) < 0 */ ) {
+        if (!l_thread) // the left is not a thread (have a child), go deeper down in the tree
+            return left->insert(v);
         else{
             Node *n = new Node(v, left, this);
             left = n;
             left->r_thread = left->l_thread = true;
-            l_thread = false; // den vi Šr i
-
+            l_thread = false; // den vi är i
             return true;
         }
     }
     // the value is larger, insert at right
-    else if( (v.first).compare(value.first) > 0 ) {
+    else if( v.first > value.first /*(v.first).compare(value.first) > 0*/ ) {
         if (!r_thread) // go deeper down in the tree
-            right->insert(v);
+            return right->insert(v);
         else{
             Node *n = new Node(v,this, right);
             right = n;
             right->r_thread = right->l_thread = true;
             r_thread = false; // den vi Šr i
-
             return true;
         }
 
     }
 
-    // the element already exist in the tree
+
+    // the element already exist in the tree, add counter
+    value.second ++;//= v.second;
     return false;
 }
 
@@ -76,26 +77,22 @@ bool Node::remove(string key, Node* parent, bool isRight)
     // use removeMe here
     // find the node to remove
 
-    if( key.compare(value.first) < 0 ){
+    if(  key < value.first  /*key.compare(value.first) < 0 */){ // smaller
         if(!l_thread)
-            //return remove(key,left,false); // hmm, anvŠnda parent ngn stans..
             return left->remove(key,this,false);
         else
             return false;
     }
-    else if(key.compare(value.first) > 0 ) {
+    else if( key > value.first  /*key.compare(value.first) > 0*/ ) { // larger
         if(!r_thread)
-            //return remove(key, right, true);
             return right->remove(key, this, true);
         else
             return false;
     }
     else{ // they are alike!
         if(!l_thread && !r_thread){
-            //replace value and then start recursion again! LITE OS€KER: MKT OS€KER
+            //replace                                                                    value and then start recursion again!
             // http://forums.devshed.com/programming-42/binary-search-tree-remove-function-303429.html
-            //value = findMin()->value;
-            //return remove(value.first, this, true);
             value = right->findMin()->value;
             return right->remove(value.first, this, true);
         }
@@ -121,24 +118,29 @@ bool Node::remove(string key, Node* parent, bool isRight)
 void Node::removeMe(Node* parent, bool isRight)
 {
     if(!isRight){ // the node is a left child of parent
-            //här har jag ändrat
         if(r_thread && l_thread){ // no children
             parent->l_thread = true;
             parent->left = this->left;
-            std::cout<< "Removed1: " << value.first << endl;
             delete this;
         }
         else if(!r_thread){   // has only a right child
-            // flytta en jŠvla massa pekare..
             parent->left = this->right;
-            this->right->left = this->left;
-            std::cout<< "Removed2: " << value.first << endl;
+
+            // find the most left child of right
+            right->findMin()->left = this->left;
+
+            this->right = nullptr;
+
             delete this;
         }
         else if(!l_thread){ // has only a left child
             parent->left = this->left;
-            this->left->right = this->right;
-            std::cout<< "Removed3: " << value.first << endl;
+
+            // find the most right child of left
+            left->findMax()->right = this->right;
+
+            this->left = nullptr;
+
             delete this;
         }
     }
@@ -147,19 +149,26 @@ void Node::removeMe(Node* parent, bool isRight)
         if(r_thread && l_thread){ // no children
             parent->r_thread = true;
             parent->right = this->right;
-            std::cout<< "Removed4: " << value.first << endl;
             delete this;
         }
         else if(!r_thread){   // has only a right child
             parent->right = this->right;
-            this->right->left= this->left;
-            std::cout<< "Removed5: " << value.first << endl;
+
+            // find the most left child
+            right->findMin()->left = this->left;
+
+            this->right = nullptr;
+
             delete this;
         }
         else if(!l_thread){ // has only a left child
-            parent->right = this->right;
-            this->left->right = this->right;
-            std::cout<< "Removed6: " << value.first << endl;
+            parent->right = this->left;
+
+            // find the most right child
+            left->findMax()->right = this->right;
+
+            this->left = nullptr;
+
             delete this;
         }
     }
@@ -172,7 +181,7 @@ void Node::removeMe(Node* parent, bool isRight)
 //If there is no node storing key then return nullptr
 Node* Node::find(string key)
 {
-    if(key.compare(value.first) == 0)
+    if(key.compare(value.first) == 0) // the same
          return this;
     else if (key.compare(value.first) < 0 && !l_thread)
         return left->find(key);
@@ -188,6 +197,7 @@ Node* Node::find(string key)
 Node* Node::findMin()
 {
     Node *n = this;
+    cout << "DEBUG bajs: " <<value.first << endl;
     while (!n->l_thread)
         n = n->left;
 

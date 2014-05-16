@@ -35,7 +35,6 @@ class BiIterator
         // Constructor
         BiIterator(Node *ptr);
 
-
         /** \brief Dereferencing operator.
         *
         * \return Reference to the element stored by the node pointed by this iterator.

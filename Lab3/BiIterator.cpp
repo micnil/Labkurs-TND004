@@ -21,7 +21,6 @@ BiIterator::BiIterator(Node *ptr)
 
  }
 
-
 //Dereferencing operator
 ELEMENT& BiIterator::operator*() const
 {
@@ -39,8 +38,8 @@ ELEMENT* BiIterator::operator->() const
 //Equality comparison operator
 bool BiIterator::operator==(const BiIterator &it) const
 {
-    // if same they return 0. 
-    return !(current->value.first).compare(it.current->value.first);
+    // if same they return 0.
+    return !(current->value.first).compare(it.current->value.first); // == 0
 }
 
 
@@ -65,10 +64,10 @@ BiIterator& BiIterator::operator++()
 
 //Pos increment operator: see page 277 and 278 of C++ direkt
 BiIterator BiIterator::operator++(int)
-{    
+{
     BiIterator temp = *this;
     ++(*this);
-    
+
     return temp;
 }
 
@@ -79,7 +78,7 @@ BiIterator& BiIterator::operator--()
         current = current->left->findMax();
     else
         current = current->left;
-    
+
     return *this;
 }
 
@@ -88,7 +87,7 @@ BiIterator BiIterator::operator--(int)
 {
     BiIterator temp = *this;
     --(*this);
-    
+
     return temp;
 
 }

@@ -24,18 +24,16 @@ BST_threaded::BST_threaded()
     ELEMENT dummy("DUMMY",0);
     root = new Node(dummy);
     // the root must point at itself
-    root->left = root;
-    root->right = root;
+    root->left = root->right = root;
     // set the flags. see slide 19 on Lecture
-    root->l_thread = true;
-    root->r_thread = true;
+    root->l_thread = root->r_thread = true;
 }
 
 
 //destructor
 BST_threaded::~BST_threaded()
 {
-  //ADD CODE
+  delete root; // will call Nodes delete
 }
 
 
@@ -63,7 +61,7 @@ void BST_threaded::insert(ELEMENT v)
         root->left = new Node(v, root, root);
         root->left->l_thread = root->left->r_thread = true;
         counter = 1;
-        
+
         root->l_thread = false;
     }
     else
@@ -75,8 +73,10 @@ void BST_threaded::insert(ELEMENT v)
 void BST_threaded::remove(string key)
 {
     // must go down to the left node since we need the parent
-    if(!empty())
+    if(!empty()) {
+        cout << "DEBUG: remove string " << key << endl;
         root->left->remove(key, root, false); // send in key, parent and if right child
+    }
 }
 
 
@@ -88,17 +88,17 @@ void BST_threaded::remove(string key)
 ELEMENT& BST_threaded::operator[](string key)
 {
     return *find(key); // since the BiIterator funcion will return ELEMENT&
-    
+
     /*
-    
+
     if(!empty()){
         Node *n = root->left->find(key);
-        
+
         if(n)
             return n->value;
     }
      */
-    
+
 }
 
 
@@ -109,11 +109,11 @@ BiIterator BST_threaded::find(string key) const
 {
     if(!empty()) {
         Node *ptr = root->left->find(key);
-    
+
         if(ptr) // if found in the key
             return BiIterator(ptr);
     }
-        
+
     return end();
 }
 
@@ -121,10 +121,9 @@ BiIterator BST_threaded::find(string key) const
 //Return an iterator referring to the first node in the inorder traversal of the BST
 BiIterator BST_threaded::begin() const
 {
-    //ADD CODE
     if (empty()) return end();
     Node *ptr = root->left->findMin();//find the smallest node of the tree
- 
+
     BiIterator it(ptr);
     return it;
 }
