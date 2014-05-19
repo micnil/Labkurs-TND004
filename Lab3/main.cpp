@@ -102,12 +102,15 @@ int main()
     string wait;
     getline(cin, wait);
     
-    for (BiIterator it = table.begin(); it != table.end(); ++it){
-        if(it->second == 1 ){
+    BiIterator it = table.begin();
+    
+    while(it != table.end()){
+        if(it->second == 1){
             string rm = it->first;
-            --it;               // move back the iterator, otherwise it will not work...
+            --it;
             table.remove(rm);
         }
+        ++it;
     }
 
     cout << endl << "Number of words after remove: " << table.size() << endl;
@@ -127,8 +130,7 @@ int main()
     BiIterator it1 = table.find(w1);
     BiIterator it2 = table.find(w2);
     
-    // TODO: check if the word exist in the table or not..
-    
+    // TODO: check if the word exist in the table or not ??
     
     --it1; // move on iterator so we can write this out also
     
