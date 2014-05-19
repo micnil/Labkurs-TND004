@@ -39,14 +39,16 @@ ELEMENT* BiIterator::operator->() const
 bool BiIterator::operator==(const BiIterator &it) const
 {
     // if same they return 0.
-    return !(current->value.first).compare(it.current->value.first); // == 0
+    return (current->value.first == it.current->value.first); // use string compares
+   // return !(current->value.first).compare(it.current->value.first); // == 0
 }
 
 
 //Inequality comparison operator
 bool BiIterator::operator!=(const BiIterator &it) const
 {
-    return ( (current->value.first).compare(it.current->value.first) !=0 );
+    return (current->value.first != it.current->value.first);
+    //return ( (current->value.first).compare(it.current->value.first) !=0 );
 }
 
 
@@ -57,6 +59,7 @@ BiIterator& BiIterator::operator++()
         current = current->right->findMin(); // find the smallest node of the right subtree
     else
         current = current->right; // follow right thread
+    
     return *this;
 }
 
@@ -75,7 +78,7 @@ BiIterator BiIterator::operator++(int)
 BiIterator& BiIterator::operator--()
 {
     if(!current->l_thread)
-        current = current->left->findMax();
+        current = current->left->findMax(); // find the max node of the left subtree
     else
         current = current->left;
 

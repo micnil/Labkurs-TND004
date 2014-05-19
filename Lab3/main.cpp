@@ -31,8 +31,10 @@ bool isNotAlphaAndNotDigit(char c)
 }
 
 void displayElement(const MAP &table){
-    for(  BiIterator it = table.begin(); it != table.end(); it++)
-        cout << setw(15) << (*it).first << setw(15) << (*it).second << endl;
+    cout << setw(11) << "KEY" << setw(21) << "COUNTER" << endl;
+    cout << setfill('=') << setw(35) << "="  << endl << setfill(' ');
+    for(BiIterator it = table.begin(); it != table.end(); ++it)
+        cout << setw(15) << it->first << setw(15) << it->second << endl;
 }
 
 int main()
@@ -57,20 +59,16 @@ int main()
     }
 
     string word;
-    int counterWords=0;
 
-    // läs in från filnamnet, while ord finns
+    // read in from file
     while(textFile >> word)
     {
-
         // erase punctations (only char and numbers are kept)
         word.erase(remove_if(word.begin(), word.end(), isNotAlphaAndNotDigit), word.end());
         //convert to lower-case letters
         transform(word.begin(), word.end(), word.begin(), ::tolower);
 
         ELEMENT w(word, 1);
-
-        ++counterWords;
         table.insert(w);
 
     }
@@ -83,51 +81,62 @@ int main()
     * - frequency table                                   *
     *******************************************************/
 
-    // number of word in file
-    counterWords = 0;
-
-    // is this necessary since we can count when we read from file?
-    BiIterator it = table.begin();
-    for( ; it != table.end(); it++)
-        counterWords += (*it).second;
-
+    // number of word in file, numberOfWords(table) is a function
+    int counterWords = 0;
+    for(BiIterator it = table.begin(); it != table.end(); ++it)
+        counterWords += it->second;
+    
     cout << "Number of words in the file: " << counterWords << endl;
+   
     // number of unique words
     cout << "Number of unique words in the file: " << table.size() << endl;
 
     cout << endl << "Frequency table sorted alphabetically..." << endl << endl;
-    cout << setw(11) << "KEY" << setw(21) << "COUNTER" << endl;
-    cout << setfill('=') << setw(35) << "="  << endl << setfill(' ');
-
     displayElement(table);
 
     /******************************************************
     * PHASE 3: remove all words with counter 1            *
     *          and display table again                    *
     *******************************************************/
-
-    for(it = table.begin(); it != table.end(); it++) {
-        string rw = it->first;
+    
+    string wait;
+    getline(cin, wait);
+    
+    for (BiIterator it = table.begin(); it != table.end(); ++it){
         if(it->second == 1 ){
-            table.remove( rw); // get the key to remove
+            string rm = it->first;
+            --it;               // move back the iterator, otherwise it will not work...
+            table.remove(rm);
         }
     }
 
-    //displayElement(table);
-
-   // string wait;
-   // getline(cin, wait);
-
-    //ADD CODE
-
-
+    cout << endl << "Number of words after remove: " << table.size() << endl;
+    cout << endl << "Frequency table sorted alphabetically again..." << endl << endl;
+    displayElement(table);
 
     /***********************************************************
     * PHASE 4: request two words to the user w1 and w2         *
     *          then display all words in the interval [w1,w2]  *
     ************************************************************/
 
-    //ADD CODE
+    string w1,w2;
+    
+    cout << endl << endl << "Enter two words: ";
+    cin >> w1 >> w2;
+    
+    BiIterator it1 = table.find(w1);
+    BiIterator it2 = table.find(w2);
+    
+    // TODO: check if the word exist in the table or not..
+    
+    
+    --it1; // move on iterator so we can write this out also
+    
+    // larger to the smallest
+    cout << endl << endl << "Frequency table in [" << w1 << ", " << w2 << "]" << endl;
+    for( ; it1!=it2; --it2){
+        cout << setw(15) << it2->first << setw(15) << it2->second << endl;
+    }
 
 
 

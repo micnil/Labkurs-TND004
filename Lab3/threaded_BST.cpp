@@ -33,7 +33,8 @@ BST_threaded::BST_threaded()
 //destructor
 BST_threaded::~BST_threaded()
 {
-  delete root; // will call Nodes delete
+    if (!empty())
+        delete root; // will call Nodes delete
 }
 
 
@@ -74,8 +75,7 @@ void BST_threaded::remove(string key)
 {
     // must go down to the left node since we need the parent
     if(!empty()) {
-        cout << "DEBUG: remove string " << key << endl;
-        root->left->remove(key, root, false); // send in key, parent and if right child
+        counter -= root->left->remove(key, root, false); // send in key, parent and if right child
     }
 }
 
