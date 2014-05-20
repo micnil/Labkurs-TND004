@@ -14,4 +14,6 @@
 
 *.cbp
 *.depend
+*.layout
+Lab3/*.layout
 Lab1/main
