@@ -141,7 +141,7 @@ void Digraph::pwsssp(int s)
             }
         }
         
-        // while we have not visited all the vertices.
+        // while we have not visited all the vertices. CHANGE to something better..
         loop = false;
         for (int i=1; i<=size;i++) {
             if(!done[i]) {
@@ -200,4 +200,10 @@ void Digraph::printPath(int t) const
     }
 
     // *** TODO ***
+    if(path[t]!=0) { // if we have not reached the end..
+        printPath(path[t]);
+    }
+    
+    cout << " " << t;
+
 }
