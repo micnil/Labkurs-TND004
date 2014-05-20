@@ -66,7 +66,36 @@ void Digraph::uwsssp(int s)
          return;
     }
 
-    // *** TODO ***
+    Queue<int> Q;
+    
+    for (int i=1; i<=size; i++){
+        dist[i] = INFINITY;
+        path[i] = 0;
+    }
+    
+    dist[s] = 0;
+    Q.enqueue(s);
+    
+    while(!Q.isEmpty()) {
+        int v = Q.getFront();
+        Q.dequeue();
+        
+        // for each edge at vertex v
+        for(Node *u = array[v].getFirst(); u!=nullptr ; u = array[v].getNext()) {
+            // if we have not visited
+            if(dist[u->vertex] == INFINITY) {
+                // update distance and path
+                dist[u->vertex] = dist[v]+1;
+                path[u->vertex] = v;
+                // enqueue this vertex
+                Q.enqueue(u->vertex);
+            }
+            
+        }
+        
+        
+    }
+
 }
 
 // positive weighted single source shortest pats
@@ -79,6 +108,43 @@ void Digraph::pwsssp(int s)
     }
 
     // *** TODO ***
+    // for all the verticies
+    for (int i=1; i<=size; i++){
+        dist[i] = INFINITY;
+        path[i] = 0;
+        done[i] = false;
+    }
+    
+    dist[s] = 0;
+    done[s] = true; // have visitied this node
+    
+    int v = s;
+    
+    while (true) {
+        
+        // update the distance of each vertex that are connected to v if better path..
+        for (Node *u = array[v].getFirst(); u!=nullptr ; u = array[v].getNext()) {
+            if(!done[u->vertex] && dist[u->vertex] > dist[v] + u->weight ) {
+                dist[u->vertex] = dist[v] + u->weight;
+                path[u->vertex] = v;
+            }
+        }
+        
+        // find smallest undone distance vertex in v.
+        int smallest = INFINITY;
+        for(Node *u = array[v].getFirst(); u!=nullptr ; u = array[v].getNext()) {
+            if (!done[u->vertex] && dist[u->vertex] < smallest){
+                
+            }
+        }
+        
+        if(v == INFINITY) break; // exit loop
+        
+        done[v]=true;
+        
+    }
+    
+    
 }
 
 // print graph
