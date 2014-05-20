@@ -120,7 +120,9 @@ void Digraph::pwsssp(int s)
     
     int v = s;
     
-    while (true) {
+    bool loop = true;
+    
+    while (loop) { // while the whole list is not done
         
         // update the distance of each vertex that are connected to v if better path..
         for (Node *u = array[v].getFirst(); u!=nullptr ; u = array[v].getNext()) {
@@ -130,16 +132,26 @@ void Digraph::pwsssp(int s)
             }
         }
         
-        // find smallest undone distance vertex in v.
-        int smallest = INFINITY;
-        for(Node *u = array[v].getFirst(); u!=nullptr ; u = array[v].getNext()) {
-            if (!done[u->vertex] && dist[u->vertex] < smallest){
-                
+        // v will find the undone vertex
+        int smallest = INFINITY; // just make it large!!!!
+        for (int i=1; i<=size; i++){
+            if(!done[i] && dist[i] <= smallest) {
+                smallest = dist[i];
+                v=i;
             }
         }
         
-        if(v == INFINITY) break; // exit loop
+        // while we have not visited all the vertices.
+        loop = false;
+        for (int i=1; i<=size;i++) {
+            if(!done[i]) {
+                loop=true;
+                break;
+            }
+        }
         
+        if(dist[v] == INFINITY ) break; // exit loop if the smallest is INFINTY, hav
+                                    // not found a path then......
         done[v]=true;
         
     }
