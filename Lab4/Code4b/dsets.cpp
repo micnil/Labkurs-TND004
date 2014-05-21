@@ -53,10 +53,19 @@ void DSets::join(int r, int s)
     assert(array[s] < 0);
 
     // simple union
-    array[r]  = s;
+    //array[r]  = s;
 
     // *** TODO ***
-    // weighted union (by size)
+    // weighted union (by size) stores the size as negativ numbers ..
+    if( array[s] < array[r] ) // s is deeper (since negativ numbers)
+    {
+        array[s] += array[r]; // update the size!!
+        array[r] = s; // hang r to root s
+    }
+    else {
+        array[r] += array[s]; // update the size!! (includes when they also are the same)
+        array[s] = r; // hang s to root r
+    }
 }
 
 // return name of current set for x
@@ -64,7 +73,7 @@ void DSets::join(int r, int s)
 int DSets::find(int x)
 {
     assert(x >= 1 && x <= size);
-
+/*
     // simple find
     if (array[x] < 0)
     {
@@ -74,9 +83,20 @@ int DSets::find(int x)
     {
         return find(array[x]);
     }
+*/
+
 
     // *** TODO ***
-    // find with path compression
+    // find with path compression, every node on the path from w
+    // to the root has its parent change
+    if (array[x] < 0) {
+        return x;
+    }
+    else {
+        return array[x] = find(array[x]); //recursive change the way to the parents
+    }
+
+
 }
 
 // just in case ...

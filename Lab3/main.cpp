@@ -68,6 +68,7 @@ int main()
         //convert to lower-case letters
         transform(word.begin(), word.end(), word.begin(), ::tolower);
 
+        // insert element in table
         ELEMENT w(word, 1);
         table.insert(w);
 
@@ -85,9 +86,9 @@ int main()
     int counterWords = 0;
     for(BiIterator it = table.begin(); it != table.end(); ++it)
         counterWords += it->second;
-    
+
     cout << "Number of words in the file: " << counterWords << endl;
-   
+
     // number of unique words
     cout << "Number of unique words in the file: " << table.size() << endl;
 
@@ -98,12 +99,12 @@ int main()
     * PHASE 3: remove all words with counter 1            *
     *          and display table again                    *
     *******************************************************/
-    
+
     string wait;
     getline(cin, wait);
-    
+
     BiIterator it = table.begin();
-    
+
     while(it != table.end()){
         if(it->second == 1){
             string rm = it->first;
@@ -123,17 +124,17 @@ int main()
     ************************************************************/
 
     string w1,w2;
-    
+
     cout << endl << endl << "Enter two words: ";
     cin >> w1 >> w2;
-    
+
     BiIterator it1 = table.find(w1);
     BiIterator it2 = table.find(w2);
-    
+
     // TODO: check if the word exist in the table or not ??
-    
+
     --it1; // move on iterator so we can write this out also
-    
+
     // larger to the smallest
     cout << endl << endl << "Frequency table in [" << w1 << ", " << w2 << "]" << endl;
     for( ; it1!=it2; --it2){

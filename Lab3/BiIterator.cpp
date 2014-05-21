@@ -59,7 +59,7 @@ BiIterator& BiIterator::operator++()
         current = current->right->findMin(); // find the smallest node of the right subtree
     else
         current = current->right; // follow right thread
-    
+
     return *this;
 }
 
@@ -69,7 +69,7 @@ BiIterator& BiIterator::operator++()
 BiIterator BiIterator::operator++(int)
 {
     BiIterator temp = *this;
-    ++(*this);
+    ++(*this); //this->operator??();
 
     return temp;
 }

@@ -125,6 +125,7 @@ BiIterator BST_threaded::begin() const
     Node *ptr = root->left->findMin();//find the smallest node of the tree
 
     BiIterator it(ptr);
+
     return it;
 }
 
